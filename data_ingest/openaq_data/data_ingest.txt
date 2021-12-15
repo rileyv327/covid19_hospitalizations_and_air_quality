@@ -1,0 +1,12 @@
+Open AQ data source:
+Completed by Rebekah Casino
+
+The data was sourced from openaq.com which contains public domain data on air quality from 
+all over the world. 
+Selected data was exported from this site to .csv files which were put into this folder 
+'openaq_data'. The aggregate combined data from all locations used is titled openaq.csv. This file was 
+uploaded to HDFS using the following -put command. 
+
+hdfs dfs -put openaq.csv project/data
+
+See 'PutCommand' screenshot in 'screenshots' folder to see exact directory in HDFS.

@@ -1,0 +1,13 @@
+use rav321;
+
+CREATE TABLE covid_data_sums
+
+row format delimited
+
+fields terminated by ','
+
+STORED AS TEXTFILE
+
+AS SELECT week_of_data, SUM(inpatient_beds) AS inpatient_beds, SUM(inpatient_beds_occupied) AS inpatient_beds_occupied, SUM(patients_suspected_covid) AS patients_suspected_covid, SUM(patients_confirmed_covid) AS patients_confirmed_covid, SUM(icu_beds) AS icu_beds, SUM(icu_beds_occupied) AS icu_beds_occupied, SUM(icu_patients_suspected_covid) AS icu_patients_suspected_covid, SUM(icu_patients_confirmed_covid) AS icu_patients_confirmed_covid FROM covid_data GROUP BY week_of_data;
+
+SELECT * FROM covid_data_sums;

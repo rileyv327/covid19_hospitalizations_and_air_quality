@@ -1,0 +1,9 @@
+The covid data by hospital was found at this source:
+
+https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u
+
+We were able to download as a csv and the load into hdfs using this command:
+
+hdfs dfs -put COVID-19_Reported_Patient_Impact_and_Hospital_Capacity_by_Facility.csv project/
+
+So, we didn't have to use any additional code to scrape or ingest our data.

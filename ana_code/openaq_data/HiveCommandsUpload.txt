@@ -1,0 +1,16 @@
+-- connect to rcc406 database;
+use rcc406;
+
+-- create table from the cleaned OpenAQ dataset
+CREATE TABLE openaq(location_id INT, location STRING, city STRING, country STRING, day 
+STRING, parameter STRING, value FLOAT, unit STRING, loc STRING) row format delimited 
+fields terminated by ',';
+
+-- load data into table
+load data inpath 'hdfs://horton.hpc.nyu.edu:8020/user/rcc406/project/outputClean2/
+openaqClean' overwrite into table openaq;
+
+-- create table with averages to make join/analysis easier
+create table avg_measurements as select day, avg(value) as avg_val, location_id from 
+openaq group by day, location_id;
+

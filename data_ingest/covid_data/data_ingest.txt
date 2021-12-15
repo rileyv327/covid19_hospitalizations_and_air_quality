@@ -1,0 +1,5 @@
+use rav321;
+
+create table covid_data (week_of_data STRING, state STRING, city STRING, inpatient_beds FLOAT, inpatient_beds_occupied FLOAT, patients_suspected_covid FLOAT, patients_confirmed_covid FLOAT, icu_beds FLOAT, icu_beds_occupied FLOAT, icu_patients_suspected_covid FLOAT, icu_patients_confirmed_covid FLOAT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;
+
+load data inpath 'hdfs://horton.hpc.nyu.edu:8020/user/rav321/project/output/part-m-00000' overwrite into table covid_data;

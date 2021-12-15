@@ -1,0 +1,151 @@
+-- copy other dataset from rav321;
+create table rcc406.covid_data as select * from rav321.covid_data;
+
+-- join two datasets together
+create table covid_air_data as select * from avg_measurements a join covid_data c on (
+a.day = c.week_of_data);
+
+-- create table with just one date and includes averages from all the columns
+-- not used for analysis
+create table daily_avgs as select day, avg(avg_val) as air_quality, avg(inpatient_beds) as 
+inpatient_beds, avg(inpatient_beds_occupied) as inpatient_beds_occupied, avg(
+patients_suspected_covid) as patients_suspected_covid, avg(patients_confirmed_covid) as 
+patients_confirmed_covid, avg(icu_beds) as icu_beds, avg(icu_beds_occupied) as 
+icu_bed_occupied, avg(icu_patients_suspected_covid) as icu_patients_suspected_covid, avg(
+icu_patients_confirmed_covid) as icu_patients_confirmed_covid from covid_air_data group by 
+day;
+
+
+create table all_borough as select day, avg(avg_val) as tot_day_avg, sum(inpatient_beds_occupied) as 
+tot_beds_sum, sum(patients_suspected_covid) as tot_suspected_covid, sum(patients_confirmed_covid) as 
+tot_confirmed_covid, sum(icu_beds_occupied) as tot_icu_sum, sum(icu_patients_suspected_covid) as 
+icu_suspected_covid, sum(icu_patients_confirmed_covid) as icu_confirmed_covid from covid_air_data group by 
+day;
+
+
+
+
+-- FINDING COVID RATES BELOW AND ABOVE AVERAGE AQ DAY NYC TOTAL
+select avg(tot_day_avg) from all_borough;
+
+-- below avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, 
+avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from 
+all_borough where (tot_day_avg < 6.46);
+
+-- above avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, 
+avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from 
+all_borough where (tot_day_avg > 6.46);
+
+
+
+-- FINDING COVID CASES BASED ON MAX AND MIN AQ DAYS
+-- max (worst) aq day
+select day, tot_day_avg, tot_suspected_covid, tot_confirmed_covid, icu_suspected_covid, 
+icu_confirmed_covid from all_borough order by tot_day_avg desc limit 3;
+select day, tot_day_avg, tot_suspected_covid, tot_confirmed_covid, icu_suspected_covid, 
+icu_confirmed_covid from all_borough order by tot_day_avg desc limit 10;
+
+-- min (best) aq day
+select day, tot_day_avg, tot_suspected_covid, tot_confirmed_covid, icu_suspected_covid, icu_confirmed_covid 
+from all_borough order by tot_day_avg limit 3;
+select day, tot_day_avg, tot_suspected_covid, tot_confirmed_covid, icu_suspected_covid, icu_confirmed_covid 
+from all_borough order by tot_day_avg limit 10;
+
+
+
+-- FINDING AQ BASED ON MAX AND MIN COVID HOSPITALIZATION DAYS
+-- max (worst) covid day (confirmed)
+select day, tot_day_avg, tot_suspected_covid, tot_confirmed_covid, icu_suspected_covid, icu_confirmed_covid 
+from all_borough order by tot_confirmed_covid desc limit 10;
+
+-- min (best) covid day (confirmed)
+select day, tot_day_avg, tot_suspected_covid, tot_confirmed_covid, icu_suspected_covid, icu_confirmed_covid 
+from all_borough order by tot_confirmed_covid limit 10;
+
+
+
+-- FINDING WORST COVID DAYS BEFORE AND AFTER VACCINE MANDATE BY TOTAL AND PERCENTAGE OF AVAILABLE BEDS (2020-09-13)
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_sums WHERE week_of_data < "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_sums WHERE week_of_data > "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data < "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data > "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+
+-- FINDING WORST COVID DAYS BEFORE AND AFTER VACCINE AVAILABLE 16+ BY TOTAL AND PERCENTAGE OF AVAILABLE BEDS (2020-03-30)
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_sums WHERE week_of_data < "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_sums WHERE week_of_data > "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data < "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, inpatient_beds, patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data > "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+
+-- FINDING WORST COVID DAYS BEFORE AND AFTER VACCINE MANDATE BY TOTAL AND PERCENTAGE OF ICU BEDS (2020-09-13)
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_sums WHERE week_of_data < "2021-09-13" ORDER BY icu_patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_sums WHERE week_of_data > "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data < "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data > "2021-09-13" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+
+-- FINDING WORST COVID DAYS BEFORE AND AFTER VACCINE AVAILABLE 16+ BY TOTAL AND PERCENTAGE OF ICU BEDS (2020-03-30)
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_sums WHERE week_of_data < "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_sums WHERE week_of_data > "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data < "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+SELECT week_of_data, icu_beds, icu_patients_confirmed_covid FROM covid_data_percentages WHERE week_of_data > "2021-03-30" ORDER BY patients_confirmed_covid desc LIMIT 10;
+
+
+
+-- CREATE MANHATTAN TABLE
+create table manhattan_data as select day, avg(avg_val) as tot_day_avg, sum(inpatient_beds_occupied) as tot_beds_sum, sum(patients_suspected_covid) as tot_suspected_covid, sum(patients_confirmed_covid) as tot_confirmed_covid, sum(icu_beds_occupied) as tot_icu_sum, sum(icu_patients_suspected_covid) as 
+icu_suspected_covid, sum(icu_patients_confirmed_covid) as icu_confirmed_covid from covid_air_data where (covid_air_data.location_id = 384 or covid_air_data.location_id = 625) and (covid_air_data.city = 'NEW YORK') group by day;
+-- FINDING COVID RATES BELOW AND ABOVE AVERAGE AQ DAY MANHATTAN
+select avg(tot_day_avg) from manhattan_data;
+-- below avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from manhattan_data where (tot_day_avg < 6.51);
+-- above avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from manhattan_data where (tot_day_avg > 6.51);
+
+-- CREATE BKLYN TABLE
+create table brooklyn_data as select day, avg(avg_val) as tot_day_avg, sum(inpatient_beds_occupied) as tot_beds_sum, sum(patients_suspected_covid) as tot_suspected_covid, sum(patients_confirmed_covid) as tot_confirmed_covid, sum(icu_beds_occupied) as tot_icu_sum, sum(icu_patients_suspected_covid) as 
+icu_suspected_covid, sum(icu_patients_confirmed_covid) as icu_confirmed_covid from covid_air_data where (covid_air_data.location_id = 648 or covid_air_data.location_id = 554) and (covid_air_data.city = 'BROOKLYN’) group by day;
+-- FINDING COVID RATES BELOW AND ABOVE AVERAGE AQ DAY BROOKLYN
+select avg(tot_day_avg) from brooklyn_data;
+-- below avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from brooklyn_data where (tot_day_avg < 6.31);
+-- above avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from brooklyn_data where (tot_day_avg > 6.31);
+
+-- CREATE BRONX TABLE
+create table bronx_data as select day, avg(avg_val) as tot_day_avg, sum(inpatient_beds_occupied) as tot_beds_sum, sum(patients_suspected_covid) as tot_suspected_covid, sum(patients_confirmed_covid) as tot_confirmed_covid, sum(icu_beds_occupied) as tot_icu_sum, sum(icu_patients_suspected_covid) as 
+icu_suspected_covid, sum(icu_patients_confirmed_covid) as icu_confirmed_covid from covid_air_data where (covid_air_data.location_id = 626 or covid_air_data.location_id = 655) and (covid_air_data.city = ‘BRONX’) group by day;
+-- FINDING COVID RATES BELOW AND ABOVE AVERAGE AQ DAY BRONX
+select avg(tot_day_avg) from bronx_data;
+-- below avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from bronx_data where (tot_day_avg < 8.18);
+-- above avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from bronx_data where (tot_day_avg > 8.18);
+
+-- CREATE QUEENS TABLE
+ create table queens_data as select day, avg(avg_val) as tot_day_avg, sum(inpatient_beds_occupied) as tot_beds_sum, sum(patients_suspected_covid) as tot_suspected_covid, sum(patients_confirmed_covid) as tot_confirmed_covid, sum(icu_beds_occupied) as tot_icu_sum, sum(icu_patients_suspected_covid) as icu_suspected_covid, sum(icu_patients_confirmed_covid) as icu_confirmed_covid from covid_air_data where (covid_air_data.location_id = 631 or covid_air_data.location_id = 8749 or covid_air_data.location_id = 628) and (covid_air_data.city = 'JAMAICA' or covid_air_data.city = 'FLUSHING') group by day;
+-- FINDING COVID RATES BELOW AND ABOVE AVERAGE AQ DAY QUEENS
+select avg(tot_day_avg) from queens_data;
+-- below avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from queens_data where (tot_day_avg < 6.36);
+-- above avg
+select avg(tot_suspected_covid) as tot_suspected_covid, avg(tot_confirmed_covid) as tot_confirmed_covid, avg (icu_suspected_covid) as icu_suspected_covid, avg(icu_confirmed_covid) as icu_confirmed_covid from queens_data where (tot_day_avg > 6.36);

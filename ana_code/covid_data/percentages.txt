@@ -1,0 +1,13 @@
+use rav321;
+
+CREATE TABLE covid_data_percentages
+
+row format delimited
+
+fields terminated by ','
+
+STORED AS TEXTFILE
+
+AS SELECT week_of_data, inpatient_beds AS inpatient_beds, (inpatient_beds_occupied / inpatient_beds) AS inpatient_beds_occupied, (patients_suspected_covid / inpatient_beds) AS patients_suspected_covid, (patients_confirmed_covid / inpatient_beds) AS patients_confirmed_covid, icu_beds AS icu_beds, (icu_beds_occupied / icu_beds) AS icu_beds_occupied, (icu_patients_suspected_covid / icu_beds) AS icu_patients_suspected_covid, (icu_patients_confirmed_covid / icu_beds) AS icu_patients_confirmed_covid FROM covid_data_sums;
+
+SELECT * FROM covid_data_percentages;
