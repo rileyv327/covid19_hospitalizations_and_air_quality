@@ -7,6 +7,7 @@ a high level. This project was run entirely using MapReduce jobs or Hive queries
 to csv's for visuals.
 
 A breif abstract of the research:
+
 After living through the COVID-19 pandemic and seeing firsthand how one disease could permanently 
 alter the course of everyone’s lives, I wondered if there were any underlying factors that contributed
 to one’s likelihood of contracting COVID-19.
@@ -27,4 +28,5 @@ hospitalizations, leaving it close to impossible to see any real correlation wit
 
 
 The full write-up can be found here:
+
 https://medium.com/@riley.valls327/analysis-of-covid-19-hospitalizations-in-relation-to-air-quality-pm2-5-4d41a84a7767
